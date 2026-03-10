@@ -1,0 +1,2099 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JRE Episode Atlas</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4efe4;
+        --bg-accent: radial-gradient(circle at top left, rgba(220, 128, 53, 0.18), transparent 36%),
+          radial-gradient(circle at top right, rgba(30, 78, 83, 0.16), transparent 34%), #f4efe4;
+        --surface: rgba(255, 250, 240, 0.84);
+        --surface-strong: rgba(255, 248, 236, 0.96);
+        --surface-muted: rgba(255, 244, 226, 0.7);
+        --border: rgba(56, 42, 28, 0.12);
+        --text: #201813;
+        --text-muted: #63564d;
+        --accent: #cf5b2a;
+        --accent-strong: #9f3f19;
+        --accent-soft: rgba(207, 91, 42, 0.16);
+        --teal: #1f5f63;
+        --teal-soft: rgba(31, 95, 99, 0.16);
+        --shadow: 0 20px 42px rgba(75, 45, 23, 0.08);
+        --radius-lg: 28px;
+        --radius-md: 20px;
+        --radius-sm: 14px;
+        --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+        --font-body: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        background: var(--bg-accent);
+        color: var(--text);
+        font-family: var(--font-body);
+        line-height: 1.5;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .page-shell {
+        width: min(1380px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 28px 0 56px;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 32px;
+        background:
+          linear-gradient(135deg, rgba(255, 247, 236, 0.94), rgba(244, 236, 223, 0.92)),
+          linear-gradient(180deg, rgba(207, 91, 42, 0.08), rgba(31, 95, 99, 0.08));
+        box-shadow: var(--shadow);
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: auto -8% -44% auto;
+        width: 280px;
+        height: 280px;
+        background: radial-gradient(circle, rgba(31, 95, 99, 0.18), transparent 60%);
+        pointer-events: none;
+      }
+
+      .hero-topline {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.48);
+        border: 1px solid rgba(56, 42, 28, 0.1);
+        color: var(--teal);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        font-weight: 700;
+      }
+
+      .hero h1 {
+        margin: 18px 0 10px;
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4.8rem);
+        line-height: 0.94;
+        letter-spacing: -0.04em;
+      }
+
+      .hero-copy {
+        max-width: 760px;
+        margin: 0 0 24px;
+        color: var(--text-muted);
+        font-size: 1.05rem;
+      }
+
+      .hero-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+        gap: 24px;
+        align-items: end;
+      }
+
+      .hero-note {
+        display: grid;
+        gap: 14px;
+      }
+
+      .upload-card,
+      .intro-card,
+      .panel,
+      .stat-card,
+      .chart-card,
+      .table-card,
+      .detail-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .upload-card {
+        display: grid;
+        gap: 18px;
+        padding: 22px;
+      }
+
+      .upload-label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 156px;
+        padding: 18px;
+        border-radius: 24px;
+        border: 1.5px dashed rgba(31, 95, 99, 0.26);
+        background:
+          linear-gradient(135deg, rgba(31, 95, 99, 0.08), rgba(207, 91, 42, 0.08)),
+          rgba(255, 255, 255, 0.46);
+        text-align: center;
+        font-weight: 600;
+        color: var(--teal);
+        transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
+      }
+
+      .upload-label:hover,
+      .upload-label.is-dragging {
+        transform: translateY(-1px);
+        border-color: rgba(207, 91, 42, 0.55);
+        background:
+          linear-gradient(135deg, rgba(31, 95, 99, 0.13), rgba(207, 91, 42, 0.12)),
+          rgba(255, 255, 255, 0.7);
+      }
+
+      .upload-label input {
+        display: none;
+      }
+
+      .upload-title {
+        display: block;
+        margin-bottom: 6px;
+        font-family: var(--font-display);
+        font-size: 1.32rem;
+        color: var(--text);
+      }
+
+      .upload-subtitle {
+        display: block;
+        max-width: 280px;
+        margin: 0 auto;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .button,
+      .subtle-button,
+      .table-link,
+      .sort-button,
+      .page-button,
+      .title-button {
+        border: 0;
+        border-radius: 999px;
+        transition: transform 160ms ease, background-color 160ms ease, color 160ms ease, opacity 160ms ease;
+      }
+
+      .button {
+        min-height: 46px;
+        padding: 0 18px;
+        background: var(--accent);
+        color: #fffaf5;
+        font-weight: 700;
+      }
+
+      .button:hover,
+      .button:focus-visible {
+        background: var(--accent-strong);
+        transform: translateY(-1px);
+      }
+
+      .subtle-button,
+      .page-button {
+        min-height: 42px;
+        padding: 0 16px;
+        background: rgba(32, 24, 19, 0.06);
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .subtle-button:hover,
+      .subtle-button:focus-visible,
+      .page-button:hover,
+      .page-button:focus-visible,
+      .title-button:hover,
+      .title-button:focus-visible {
+        background: rgba(32, 24, 19, 0.1);
+        transform: translateY(-1px);
+      }
+
+      .intro-card {
+        padding: 22px;
+      }
+
+      .intro-card h2,
+      .panel h2,
+      .chart-card h2,
+      .table-card h2,
+      .detail-card h2 {
+        margin: 0 0 8px;
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        letter-spacing: -0.02em;
+      }
+
+      .intro-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .intro-grid article {
+        padding: 14px;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.48);
+        border: 1px solid rgba(56, 42, 28, 0.08);
+      }
+
+      .intro-grid strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal);
+      }
+
+      .intro-grid p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+
+      .dataset-meta,
+      .error-banner {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        font-size: 0.95rem;
+      }
+
+      .dataset-meta.is-visible {
+        display: inline-flex;
+        background: rgba(31, 95, 99, 0.1);
+        color: var(--teal);
+      }
+
+      .error-banner.is-visible {
+        display: flex;
+        background: rgba(159, 63, 25, 0.12);
+        color: #7b2f12;
+      }
+
+      .dashboard {
+        display: none;
+        margin-top: 24px;
+        gap: 24px;
+      }
+
+      .dashboard.is-visible {
+        display: grid;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .stat-card {
+        padding: 18px 20px 20px;
+      }
+
+      .stat-label {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .stat-value {
+        margin: 10px 0 4px;
+        font-family: var(--font-display);
+        font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+        line-height: 1;
+      }
+
+      .stat-meta {
+        color: var(--text-muted);
+        font-size: 0.93rem;
+      }
+
+      .panel {
+        padding: 20px;
+      }
+
+      .filter-grid {
+        display: grid;
+        grid-template-columns: minmax(210px, 1.4fr) repeat(4, minmax(140px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-muted);
+      }
+
+      .field input,
+      .field select {
+        width: 100%;
+        min-height: 46px;
+        padding: 0 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(56, 42, 28, 0.12);
+        background: rgba(255, 255, 255, 0.66);
+        color: var(--text);
+      }
+
+      .field input:focus-visible,
+      .field select:focus-visible,
+      .button:focus-visible,
+      .subtle-button:focus-visible,
+      .sort-button:focus-visible,
+      .page-button:focus-visible,
+      .title-button:focus-visible,
+      .table-link:focus-visible {
+        outline: 2px solid rgba(31, 95, 99, 0.35);
+        outline-offset: 2px;
+      }
+
+      .filter-footer,
+      .table-toolbar,
+      .detail-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      .results-copy {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+
+      .chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(31, 95, 99, 0.08);
+        color: var(--teal);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .viz-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .chart-card {
+        padding: 20px;
+      }
+
+      .chart-copy {
+        margin: 0 0 18px;
+        color: var(--text-muted);
+        font-size: 0.94rem;
+      }
+
+      .chart-shell {
+        min-height: 240px;
+      }
+
+      .bar-chart {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(32px, 1fr));
+        gap: 10px;
+        align-items: end;
+        min-height: 240px;
+      }
+
+      .bar-column {
+        display: grid;
+        gap: 8px;
+        align-items: end;
+      }
+
+      .bar-track {
+        position: relative;
+        min-height: 168px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(31, 95, 99, 0.08), rgba(31, 95, 99, 0.14));
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        position: absolute;
+        inset: auto 0 0;
+        border-radius: 18px 18px 8px 8px;
+        background: linear-gradient(180deg, rgba(207, 91, 42, 0.9), rgba(31, 95, 99, 0.92));
+      }
+
+      .bar-value {
+        color: var(--text-muted);
+        font-size: 0.84rem;
+        text-align: center;
+      }
+
+      .bar-label {
+        color: var(--text);
+        font-size: 0.82rem;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .hbar-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .hbar-item {
+        display: grid;
+        gap: 8px;
+      }
+
+      .hbar-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .hbar-header strong {
+        font-weight: 700;
+      }
+
+      .hbar-header span {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      .hbar-track {
+        min-height: 16px;
+        border-radius: 999px;
+        background: rgba(31, 95, 99, 0.1);
+        overflow: hidden;
+      }
+
+      .hbar-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(31, 95, 99, 0.84), rgba(207, 91, 42, 0.84));
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+        gap: 18px;
+      }
+
+      .table-card,
+      .detail-card {
+        padding: 20px;
+      }
+
+      .table-controls {
+        display: grid;
+        gap: 12px;
+        width: min(100%, 760px);
+        margin-left: auto;
+      }
+
+      .table-toolbar .chart-copy {
+        margin-bottom: 0;
+        max-width: 38ch;
+      }
+
+      .pagination-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .table-search-field {
+        min-width: min(100%, 320px);
+      }
+
+      .page-size-field {
+        width: 128px;
+      }
+
+      .table-wrap {
+        overflow: auto;
+        border-radius: 22px;
+        border: 1px solid rgba(56, 42, 28, 0.08);
+        background: rgba(255, 255, 255, 0.48);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 840px;
+      }
+
+      th,
+      td {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(56, 42, 28, 0.08);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        position: sticky;
+        top: 0;
+        background: rgba(255, 248, 236, 0.94);
+        z-index: 1;
+      }
+
+      .sort-button {
+        padding: 0;
+        background: transparent;
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .sort-button[data-active="true"] {
+        color: var(--accent-strong);
+      }
+
+      tbody tr:hover {
+        background: rgba(31, 95, 99, 0.05);
+      }
+
+      .title-button {
+        display: inline-flex;
+        padding: 0;
+        background: transparent;
+        color: var(--text);
+        font-weight: 700;
+        text-align: left;
+      }
+
+      .title-button small {
+        display: block;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .table-cover {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        object-fit: cover;
+        background: rgba(31, 95, 99, 0.08);
+      }
+
+      .table-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0 12px;
+        background: var(--teal-soft);
+        color: var(--teal);
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .table-link:hover,
+      .table-link:focus-visible {
+        background: rgba(31, 95, 99, 0.16);
+        transform: translateY(-1px);
+      }
+
+      .page-button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .page-button[data-active="true"],
+      .page-button[data-active="true"]:hover,
+      .page-button[data-active="true"]:focus-visible {
+        background: var(--teal);
+        color: #fffaf5;
+        transform: none;
+      }
+
+      .pagination {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .page-numbers {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .page-ellipsis {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .page-copy {
+        color: var(--text-muted);
+        font-size: 0.94rem;
+      }
+
+      .detail-card {
+        display: grid;
+        gap: 18px;
+        align-content: start;
+      }
+
+      .detail-empty {
+        padding: 24px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.48);
+        color: var(--text-muted);
+      }
+
+      .detail-cover {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 26px;
+        background: rgba(31, 95, 99, 0.08);
+      }
+
+      .detail-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .detail-meta article {
+        padding: 12px 14px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.48);
+      }
+
+      .detail-meta span {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+      }
+
+      .detail-meta strong {
+        display: block;
+        margin-top: 6px;
+      }
+
+      .detail-description {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.48);
+        white-space: pre-wrap;
+        color: var(--text-muted);
+      }
+
+      .empty-state {
+        display: grid;
+        place-items: center;
+        min-height: 220px;
+        padding: 24px;
+        border-radius: 22px;
+        border: 1px dashed rgba(56, 42, 28, 0.14);
+        background: rgba(255, 255, 255, 0.32);
+        text-align: center;
+        color: var(--text-muted);
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 1080px) {
+        .hero-layout,
+        .viz-grid,
+        .content-grid,
+        .stats-grid,
+        .intro-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .filter-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 720px) {
+        .page-shell {
+          width: min(100vw - 18px, 1380px);
+          padding-top: 18px;
+        }
+
+        .hero,
+        .panel,
+        .chart-card,
+        .table-card,
+        .detail-card,
+        .stat-card,
+        .upload-card,
+        .intro-card {
+          border-radius: 24px;
+        }
+
+        .hero {
+          padding: 20px;
+        }
+
+        .filter-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .detail-meta {
+          grid-template-columns: 1fr;
+        }
+
+        .table-controls,
+        .table-search-field,
+        .page-size-field {
+          width: 100%;
+        }
+
+        .pagination {
+          justify-content: flex-start;
+        }
+
+        th,
+        td {
+          padding-inline: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-layout">
+          <section class="hero-note">
+            <span class="hero-topline">Single-file CSV explorer</span>
+            <div>
+              <h1>JRE Episode Atlas</h1>
+              <p class="hero-copy">
+                Upload a Spotify export and explore The Joe Rogan Experience by year, series format,
+                duration, and guest. Everything runs locally in this file: no server, no build step, and no app-side API calls.
+              </p>
+            </div>
+
+            <div class="dataset-meta" id="dataset-meta" aria-live="polite"></div>
+            <div class="error-banner" id="error-banner" role="alert"></div>
+          </section>
+
+          <section class="upload-card" aria-labelledby="upload-heading">
+            <div>
+              <h2 id="upload-heading">Load a CSV snapshot</h2>
+              <p class="chart-copy">
+                Works best with the current `joe_rogan_episodes.csv` export. Quoted fields and multiline descriptions are supported.
+              </p>
+            </div>
+
+            <label class="upload-label" id="drop-zone" for="csv-file">
+              <span>
+                <span class="upload-title">Drop a CSV here</span>
+                <span class="upload-subtitle">or click to choose a file from this folder</span>
+              </span>
+              <input id="csv-file" type="file" accept=".csv,text/csv" />
+            </label>
+
+            <div class="button-row">
+              <button class="button" id="trigger-upload" type="button">Choose CSV</button>
+              <button class="subtle-button" id="reset-dashboard" type="button">Reset filters</button>
+            </div>
+          </section>
+        </div>
+      </header>
+
+      <section class="intro-card" aria-labelledby="intro-heading" style="margin-top: 24px;">
+        <h2 id="intro-heading">What this dashboard surfaces</h2>
+        <p class="chart-copy">
+          The app derives guest names, episode formats, duration buckets, and year slices directly in the browser so the raw CSV becomes easier to browse and compare.
+        </p>
+
+        <div class="intro-grid">
+          <article>
+            <strong>Trend view</strong>
+            <p>See how episode volume moves year to year and how different formats show up over time.</p>
+          </article>
+          <article>
+            <strong>Filter stack</strong>
+            <p>Combine search, year range, series type, explicit flag, and duration buckets without leaving the page.</p>
+          </article>
+          <article>
+            <strong>Fast drill-down</strong>
+            <p>Open a row to inspect cover art, description, and the Spotify link while keeping the table context intact.</p>
+          </article>
+        </div>
+      </section>
+
+      <main class="dashboard" id="dashboard">
+        <section class="stats-grid" aria-label="Summary metrics">
+          <article class="stat-card" data-stat="episode-count">
+            <div class="stat-label">Episodes</div>
+            <div class="stat-value">0</div>
+            <div class="stat-meta">Filtered total</div>
+          </article>
+          <article class="stat-card" data-stat="date-span">
+            <div class="stat-label">Date span</div>
+            <div class="stat-value">-</div>
+            <div class="stat-meta">Earliest to latest</div>
+          </article>
+          <article class="stat-card" data-stat="average-duration">
+            <div class="stat-label">Average duration</div>
+            <div class="stat-value">-</div>
+            <div class="stat-meta">Across visible episodes</div>
+          </article>
+          <article class="stat-card" data-stat="longest-episode">
+            <div class="stat-label">Longest episode</div>
+            <div class="stat-value">-</div>
+            <div class="stat-meta">Longest visible runtime</div>
+          </article>
+        </section>
+
+        <section class="panel" aria-labelledby="filters-heading">
+          <h2 id="filters-heading">Filters</h2>
+          <p class="chart-copy">
+            Use the controls below to slice the dataset by year, series, explicit flag, and duration. Search lives in the episode catalog so the entire dashboard stays in sync from one place.
+          </p>
+
+          <div class="filter-grid">
+            <div class="field">
+              <label for="year-from">From year</label>
+              <select id="year-from"></select>
+            </div>
+
+            <div class="field">
+              <label for="year-to">To year</label>
+              <select id="year-to"></select>
+            </div>
+
+            <div class="field">
+              <label for="series-filter">Series type</label>
+              <select id="series-filter">
+                <option value="all">All series</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="explicit-filter">Explicit flag</label>
+              <select id="explicit-filter">
+                <option value="all">All episodes</option>
+                <option value="explicit">Explicit only</option>
+                <option value="clean">Clean only</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="duration-filter">Duration bucket</label>
+              <select id="duration-filter">
+                <option value="all">All durations</option>
+                <option value="<1h">Under 1 hour</option>
+                <option value="1-2h">1 to 2 hours</option>
+                <option value="2-3h">2 to 3 hours</option>
+                <option value="3h+">3 hours and up</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-footer">
+            <div class="results-copy" id="results-summary">Upload a CSV to populate the dashboard.</div>
+            <div class="chips" id="active-chips" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="viz-grid" aria-label="Charts">
+          <article class="chart-card">
+            <h2>Episodes by year</h2>
+            <p class="chart-copy">Year-over-year volume for the currently visible slice of the dataset.</p>
+            <div class="chart-shell" id="year-chart"></div>
+          </article>
+
+          <article class="chart-card">
+            <h2>Series mix</h2>
+            <p class="chart-copy">How the visible episodes split across numbered shows, MMA shows, companions, and specials.</p>
+            <div class="chart-shell" id="series-chart"></div>
+          </article>
+
+          <article class="chart-card">
+            <h2>Duration spread</h2>
+            <p class="chart-copy">Runtime buckets built from `duration_ms` for the visible episode set.</p>
+            <div class="chart-shell" id="duration-chart"></div>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <article class="table-card">
+            <div class="table-toolbar">
+              <div>
+                <h2>Episode catalog</h2>
+                <p class="chart-copy">Search across every loaded episode field, then sort and page through the current slice.</p>
+              </div>
+
+              <div class="table-controls">
+                <div class="field table-search-field">
+                  <label for="search-input">Search episodes</label>
+                  <input
+                    id="search-input"
+                    type="search"
+                    placeholder="Search titles, guests, dates, descriptions, or URLs"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="pagination-toolbar">
+                  <div class="field page-size-field">
+                    <label for="page-size">Rows per page</label>
+                    <select id="page-size"></select>
+                  </div>
+
+                  <div class="pagination" aria-label="Episode catalog pagination">
+                    <button class="page-button" id="prev-page" type="button">Previous</button>
+                    <div class="page-numbers" id="page-numbers" role="group" aria-label="Page selection"></div>
+                    <button class="page-button" id="next-page" type="button">Next</button>
+                    <div class="page-copy" id="page-copy" aria-live="polite">Page 1 of 1</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table aria-describedby="results-summary">
+                <thead>
+                  <tr>
+                    <th scope="col">Cover</th>
+                    <th scope="col">
+                      <button class="sort-button" data-sort-key="name" data-sort-label="Title" type="button">Title</button>
+                    </th>
+                    <th scope="col">
+                      <button class="sort-button" data-sort-key="guestName" data-sort-label="Guest" type="button">Guest</button>
+                    </th>
+                    <th scope="col">
+                      <button class="sort-button" data-sort-key="releaseDate" data-sort-label="Release date" type="button">Release date</button>
+                    </th>
+                    <th scope="col">
+                      <button class="sort-button" data-sort-key="durationMs" data-sort-label="Duration" type="button">Duration</button>
+                    </th>
+                    <th scope="col">
+                      <button class="sort-button" data-sort-key="seriesType" data-sort-label="Series" type="button">Series</button>
+                    </th>
+                    <th scope="col">Spotify</th>
+                  </tr>
+                </thead>
+                <tbody id="episode-table-body">
+                  <tr>
+                    <td colspan="7">
+                      <div class="empty-state">Upload a CSV to populate the table.</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <aside class="detail-card" aria-labelledby="detail-heading">
+            <div class="detail-toolbar">
+              <div>
+                <h2 id="detail-heading">Episode detail</h2>
+                <p class="chart-copy">Select a title in the table to inspect the row in more detail.</p>
+              </div>
+            </div>
+
+            <div id="detail-content" class="detail-empty">Select an episode to view artwork, metadata, and the full description.</div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const REQUIRED_HEADERS = [
+        "name",
+        "description",
+        "duration_ms",
+        "duration_str",
+        "release_date",
+        "explicit",
+        "image_url",
+        "url",
+      ];
+
+      const DEFAULT_PAGE_SIZE = 10;
+      const PAGE_SIZE_OPTIONS = [10, 25, 50];
+      const numberFormatter = new Intl.NumberFormat("en-US");
+      const dateFormatter = new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      const LOG_LEVELS = { debug: 10, info: 20, warn: 30, error: 40 };
+      const CURRENT_LOG_LEVEL = LOG_LEVELS.info;
+      const FALLBACK_IMAGE =
+        "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+
+      const state = {
+        rows: [],
+        filename: "",
+        filters: {
+          search: "",
+          yearFrom: "all",
+          yearTo: "all",
+          seriesType: "all",
+          explicit: "all",
+          durationBucket: "all",
+        },
+        sort: {
+          key: "releaseDate",
+          direction: "desc",
+        },
+        pagination: {
+          page: 1,
+          pageSize: DEFAULT_PAGE_SIZE,
+        },
+        selectedId: null,
+      };
+
+      const dom = {
+        fileInput: document.querySelector("#csv-file"),
+        dropZone: document.querySelector("#drop-zone"),
+        triggerUpload: document.querySelector("#trigger-upload"),
+        resetDashboard: document.querySelector("#reset-dashboard"),
+        dashboard: document.querySelector("#dashboard"),
+        datasetMeta: document.querySelector("#dataset-meta"),
+        errorBanner: document.querySelector("#error-banner"),
+        searchInput: document.querySelector("#search-input"),
+        yearFrom: document.querySelector("#year-from"),
+        yearTo: document.querySelector("#year-to"),
+        seriesFilter: document.querySelector("#series-filter"),
+        explicitFilter: document.querySelector("#explicit-filter"),
+        durationFilter: document.querySelector("#duration-filter"),
+        resultsSummary: document.querySelector("#results-summary"),
+        activeChips: document.querySelector("#active-chips"),
+        yearChart: document.querySelector("#year-chart"),
+        seriesChart: document.querySelector("#series-chart"),
+        durationChart: document.querySelector("#duration-chart"),
+        tableBody: document.querySelector("#episode-table-body"),
+        detailContent: document.querySelector("#detail-content"),
+        pageSize: document.querySelector("#page-size"),
+        prevPage: document.querySelector("#prev-page"),
+        nextPage: document.querySelector("#next-page"),
+        pageNumbers: document.querySelector("#page-numbers"),
+        pageCopy: document.querySelector("#page-copy"),
+        sortButtons: [...document.querySelectorAll(".sort-button")],
+      };
+
+      function log(level, message, details) {
+        if (LOG_LEVELS[level] < CURRENT_LOG_LEVEL) {
+          return;
+        }
+
+        const method = level === "debug" ? "log" : level;
+        if (details !== undefined) {
+          console[method](`[dashboard:${level}] ${message}`, details);
+        } else {
+          console[method](`[dashboard:${level}] ${message}`);
+        }
+      }
+
+      function showError(message) {
+        dom.errorBanner.textContent = message;
+        dom.errorBanner.classList.add("is-visible");
+      }
+
+      function clearError() {
+        dom.errorBanner.textContent = "";
+        dom.errorBanner.classList.remove("is-visible");
+      }
+
+      function showDatasetMeta(message) {
+        dom.datasetMeta.textContent = message;
+        dom.datasetMeta.classList.add("is-visible");
+      }
+
+      function resetDatasetMeta() {
+        dom.datasetMeta.textContent = "";
+        dom.datasetMeta.classList.remove("is-visible");
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function sanitizeUrl(value, { allowBlank = false } = {}) {
+        if (!value) {
+          return allowBlank ? FALLBACK_IMAGE : "";
+        }
+
+        try {
+          const parsed = new URL(value);
+          if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return parsed.toString();
+          }
+        } catch (error) {
+          log("warn", "Skipping invalid URL", value);
+        }
+
+        return allowBlank ? FALLBACK_IMAGE : "";
+      }
+
+      function pluralize(count, singular, plural = `${singular}s`) {
+        return count === 1 ? singular : plural;
+      }
+
+      // Custom CSV parsing is necessary because the episode descriptions include commas,
+      // quotes, and occasional line breaks. This parser keeps the dashboard standalone
+      // without relying on a third-party library.
+      function parseCsv(csvText) {
+        const rows = [];
+        let row = [];
+        let field = "";
+        let inQuotes = false;
+
+        const text = csvText.replace(/^\uFEFF/, "");
+
+        for (let index = 0; index < text.length; index += 1) {
+          const character = text[index];
+          const nextCharacter = text[index + 1];
+
+          if (inQuotes) {
+            if (character === '"') {
+              if (nextCharacter === '"') {
+                field += '"';
+                index += 1;
+              } else {
+                inQuotes = false;
+              }
+            } else {
+              field += character;
+            }
+            continue;
+          }
+
+          if (character === '"') {
+            inQuotes = true;
+            continue;
+          }
+
+          if (character === ",") {
+            row.push(field);
+            field = "";
+            continue;
+          }
+
+          if (character === "\n" || character === "\r") {
+            if (character === "\r" && nextCharacter === "\n") {
+              index += 1;
+            }
+            row.push(field);
+            rows.push(row);
+            row = [];
+            field = "";
+            continue;
+          }
+
+          field += character;
+        }
+
+        if (inQuotes) {
+          throw new Error("The CSV ended while inside a quoted field.");
+        }
+
+        if (field.length > 0 || row.length > 0) {
+          row.push(field);
+          rows.push(row);
+        }
+
+        return rows;
+      }
+
+      function validateHeaders(headers) {
+        const missingHeaders = REQUIRED_HEADERS.filter((header) => !headers.includes(header));
+        if (missingHeaders.length > 0) {
+          throw new Error(`Missing required columns: ${missingHeaders.join(", ")}`);
+        }
+      }
+
+      function inferSeriesType(title) {
+        if (title.startsWith("JRE MMA Show")) {
+          return "JRE MMA Show";
+        }
+        if (/Fight Companion/i.test(title)) {
+          return "Fight Companion";
+        }
+        if (/Protect Our Parks/i.test(title)) {
+          return "Protect Our Parks";
+        }
+        if (/^#\d+\s*-/.test(title)) {
+          return "Numbered Episode";
+        }
+        return "Other";
+      }
+
+      function extractGuestName(title, seriesType) {
+        if (seriesType === "Numbered Episode") {
+          const match = title.match(/^#\d+\s*-\s*(.+)$/);
+          return match ? match[1].trim() : title;
+        }
+
+        if (seriesType === "JRE MMA Show") {
+          const match = title.match(/^JRE MMA Show #\d+\s+with\s+(.+)$/i);
+          return match ? match[1].trim() : title;
+        }
+
+        if (seriesType === "Fight Companion") {
+          return "Fight Companion";
+        }
+
+        if (seriesType === "Protect Our Parks") {
+          return "Protect Our Parks";
+        }
+
+        return title;
+      }
+
+      function normalizeExplicit(value) {
+        return String(value).trim().toLowerCase() === "true";
+      }
+
+      function getDurationBucket(durationMs) {
+        const hours = durationMs / 3_600_000;
+        if (hours < 1) {
+          return "<1h";
+        }
+        if (hours < 2) {
+          return "1-2h";
+        }
+        if (hours < 3) {
+          return "2-3h";
+        }
+        return "3h+";
+      }
+
+      function formatDuration(durationMs) {
+        const totalMinutes = Math.round(durationMs / 60_000);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        if (hours === 0) {
+          return `${minutes}m`;
+        }
+        if (minutes === 0) {
+          return `${hours}h`;
+        }
+        return `${hours}h ${minutes}m`;
+      }
+
+      function formatDate(isoDate) {
+        if (!isoDate) {
+          return "Unknown";
+        }
+
+        const parsed = new Date(`${isoDate}T12:00:00`);
+        if (Number.isNaN(parsed.getTime())) {
+          return isoDate;
+        }
+
+        return dateFormatter.format(parsed);
+      }
+
+      // Precompute a lowercased search index once so typing stays responsive even when
+      // the uploaded CSV contains thousands of rows and long descriptions.
+      function buildSearchText(raw, derivedFields) {
+        return [
+          ...Object.values(raw),
+          derivedFields.guestName,
+          derivedFields.seriesType,
+          derivedFields.durationBucket,
+          derivedFields.durationDisplay,
+          derivedFields.releaseYear,
+          derivedFields.explicit ? "explicit" : "clean",
+          formatDate(raw.release_date),
+        ]
+          .join("\n")
+          .toLowerCase();
+      }
+
+      function toObjects(rows) {
+        if (rows.length === 0) {
+          throw new Error("The selected file is empty.");
+        }
+
+        const [headers, ...records] = rows;
+        validateHeaders(headers);
+
+        return records
+          .filter((record) => record.some((value) => value !== ""))
+          .map((record, recordIndex) => {
+            const raw = {};
+            headers.forEach((header, headerIndex) => {
+              raw[header] = record[headerIndex] ?? "";
+            });
+
+            const durationMs = Number.parseInt(raw.duration_ms, 10) || 0;
+            const seriesType = inferSeriesType(raw.name);
+            const guestName = extractGuestName(raw.name, seriesType);
+            const releaseYear = raw.release_date ? raw.release_date.slice(0, 4) : "Unknown";
+            const explicit = normalizeExplicit(raw.explicit);
+            const durationDisplay = raw.duration_str || formatDuration(durationMs);
+            const durationBucket = getDurationBucket(durationMs);
+
+            return {
+              id: raw.id || `row-${recordIndex}`,
+              name: raw.name,
+              description: raw.description,
+              durationMs,
+              durationDisplay,
+              releaseDate: raw.release_date,
+              releaseYear,
+              explicit,
+              imageUrl: raw.image_url,
+              spotifyUrl: raw.url,
+              seriesType,
+              guestName,
+              durationBucket,
+              searchText: buildSearchText(raw, {
+                guestName,
+                seriesType,
+                durationBucket,
+                durationDisplay,
+                releaseYear,
+                explicit,
+              }),
+            };
+          });
+      }
+
+      function populatePageSizeOptions() {
+        dom.pageSize.innerHTML = PAGE_SIZE_OPTIONS.map((pageSize) => `<option value="${pageSize}">${pageSize}</option>`).join("");
+        dom.pageSize.value = String(DEFAULT_PAGE_SIZE);
+      }
+
+      function populateFilterOptions(rows) {
+        const years = [...new Set(rows.map((row) => row.releaseYear).filter((year) => year !== "Unknown"))].sort();
+        const seriesTypes = [...new Set(rows.map((row) => row.seriesType))].sort((left, right) =>
+          left.localeCompare(right)
+        );
+
+        const yearOptions = [`<option value="all">Any year</option>`]
+          .concat(years.map((year) => `<option value="${year}">${year}</option>`))
+          .join("");
+        dom.yearFrom.innerHTML = yearOptions;
+        dom.yearTo.innerHTML = yearOptions;
+
+        dom.seriesFilter.innerHTML = [`<option value="all">All series</option>`]
+          .concat(seriesTypes.map((seriesType) => `<option value="${seriesType}">${seriesType}</option>`))
+          .join("");
+      }
+
+      function getFilteredRows() {
+        const searchQuery = state.filters.search.trim().toLowerCase();
+        return state.rows.filter((row) => {
+          if (searchQuery && !row.searchText.includes(searchQuery)) {
+            return false;
+          }
+
+          if (state.filters.yearFrom !== "all" && (row.releaseYear === "Unknown" || row.releaseYear < state.filters.yearFrom)) {
+            return false;
+          }
+
+          if (state.filters.yearTo !== "all" && (row.releaseYear === "Unknown" || row.releaseYear > state.filters.yearTo)) {
+            return false;
+          }
+
+          if (state.filters.seriesType !== "all" && row.seriesType !== state.filters.seriesType) {
+            return false;
+          }
+
+          if (state.filters.explicit === "explicit" && !row.explicit) {
+            return false;
+          }
+
+          if (state.filters.explicit === "clean" && row.explicit) {
+            return false;
+          }
+
+          if (state.filters.durationBucket !== "all" && row.durationBucket !== state.filters.durationBucket) {
+            return false;
+          }
+
+          return true;
+        });
+      }
+
+      function sortRows(rows) {
+        const { key, direction } = state.sort;
+        const factor = direction === "asc" ? 1 : -1;
+
+        return [...rows].sort((left, right) => {
+          const leftValue = left[key];
+          const rightValue = right[key];
+
+          if (leftValue === rightValue) {
+            return left.name.localeCompare(right.name);
+          }
+
+          if (key === "durationMs") {
+            return (leftValue - rightValue) * factor;
+          }
+
+          return String(leftValue).localeCompare(String(rightValue)) * factor;
+        });
+      }
+
+      // Keep page navigation compact for large datasets by always showing the ends and
+      // a small window around the current page instead of rendering hundreds of buttons.
+      function getVisiblePageItems(totalPages) {
+        if (totalPages <= 6) {
+          return Array.from({ length: totalPages }, (_, index) => index + 1);
+        }
+
+        let start = Math.max(2, state.pagination.page - 1);
+        let end = Math.min(totalPages - 1, state.pagination.page + 1);
+
+        if (state.pagination.page <= 3) {
+          end = 4;
+        }
+
+        if (state.pagination.page >= totalPages - 2) {
+          start = totalPages - 3;
+        }
+
+        const items = [1];
+        if (start > 2) {
+          items.push("ellipsis-start");
+        }
+
+        for (let page = start; page <= end; page += 1) {
+          items.push(page);
+        }
+
+        if (end < totalPages - 1) {
+          items.push("ellipsis-end");
+        }
+
+        items.push(totalPages);
+        return items;
+      }
+
+      function renderPagination(totalPages) {
+        dom.pageNumbers.innerHTML = getVisiblePageItems(totalPages)
+          .map((item) => {
+            if (typeof item === "string") {
+              return `<span class="page-ellipsis" aria-hidden="true">…</span>`;
+            }
+
+            const isActive = item === state.pagination.page;
+            return `
+              <button
+                class="page-button"
+                data-page="${item}"
+                data-active="${String(isActive)}"
+                type="button"
+                ${isActive ? 'aria-current="page"' : `aria-label="Go to page ${item}"`}
+              >
+                ${item}
+              </button>
+            `;
+          })
+          .join("");
+      }
+
+      function getPaginatedRows(rows) {
+        const totalPages = Math.max(1, Math.ceil(rows.length / state.pagination.pageSize));
+        if (state.pagination.page > totalPages) {
+          state.pagination.page = totalPages;
+        }
+
+        const startIndex = (state.pagination.page - 1) * state.pagination.pageSize;
+        return {
+          pageRows: rows.slice(startIndex, startIndex + state.pagination.pageSize),
+          totalPages,
+          startIndex,
+        };
+      }
+
+      function calculateStats(rows) {
+        if (rows.length === 0) {
+          return {
+            count: 0,
+            dateSpan: "No matches",
+            averageDuration: "-",
+            longestEpisode: "-",
+            longestMeta: "Adjust filters to widen the slice",
+          };
+        }
+
+        const sortedDates = rows.map((row) => row.releaseDate).filter(Boolean).sort();
+        const totalDuration = rows.reduce((sum, row) => sum + row.durationMs, 0);
+        const longestEpisode = rows.reduce(
+          (currentLongest, row) =>
+            !currentLongest || row.durationMs > currentLongest.durationMs ? row : currentLongest,
+          null
+        );
+
+        return {
+          count: rows.length,
+          dateSpan: `${sortedDates[0].slice(0, 4)}-${sortedDates[sortedDates.length - 1].slice(0, 4)}`,
+          dateMeta: `${formatDate(sortedDates[0])} to ${formatDate(sortedDates[sortedDates.length - 1])}`,
+          averageDuration: formatDuration(totalDuration / rows.length),
+          longestEpisode: longestEpisode.durationDisplay,
+          longestMeta: longestEpisode.name,
+        };
+      }
+
+      function updateStats(rows) {
+        const stats = calculateStats(rows);
+        const countCard = document.querySelector('[data-stat="episode-count"]');
+        const dateCard = document.querySelector('[data-stat="date-span"]');
+        const averageCard = document.querySelector('[data-stat="average-duration"]');
+        const longestCard = document.querySelector('[data-stat="longest-episode"]');
+
+        countCard.querySelector(".stat-value").textContent = numberFormatter.format(stats.count);
+        countCard.querySelector(".stat-meta").textContent =
+          `${numberFormatter.format(stats.count)} visible ${pluralize(stats.count, "episode")}`;
+
+        dateCard.querySelector(".stat-value").textContent = stats.dateSpan;
+        dateCard.querySelector(".stat-meta").textContent = stats.dateMeta || "Earliest to latest";
+
+        averageCard.querySelector(".stat-value").textContent = stats.averageDuration;
+        averageCard.querySelector(".stat-meta").textContent =
+          rows.length === 0 ? "Adjust filters to widen the slice" : "Across visible episodes";
+
+        longestCard.querySelector(".stat-value").textContent = stats.longestEpisode;
+        longestCard.querySelector(".stat-meta").textContent = stats.longestMeta;
+      }
+
+      function renderEmptyChart(container, message) {
+        container.innerHTML = `<div class="empty-state">${message}</div>`;
+      }
+
+      function renderYearChart(rows) {
+        if (rows.length === 0) {
+          renderEmptyChart(dom.yearChart, "No episodes match the current filters.");
+          return;
+        }
+
+        const countsByYear = rows.reduce((accumulator, row) => {
+          accumulator[row.releaseYear] = (accumulator[row.releaseYear] || 0) + 1;
+          return accumulator;
+        }, {});
+
+        const entries = Object.entries(countsByYear).sort((left, right) => left[0].localeCompare(right[0]));
+        const maxCount = Math.max(...entries.map((entry) => entry[1]));
+
+        dom.yearChart.innerHTML = `
+          <div class="bar-chart">
+            ${entries
+              .map(([year, count]) => {
+                const height = Math.max(12, Math.round((count / maxCount) * 100));
+                return `
+                  <article class="bar-column" aria-label="${escapeHtml(year)}: ${count} ${pluralize(count, "episode")}">
+                    <span class="bar-value">${numberFormatter.format(count)}</span>
+                    <div class="bar-track">
+                      <div class="bar-fill" style="height: ${height}%"></div>
+                    </div>
+                    <span class="bar-label">${escapeHtml(year)}</span>
+                  </article>
+                `;
+              })
+              .join("")}
+          </div>
+        `;
+      }
+
+      function renderHorizontalChart(container, entries, emptyMessage) {
+        if (entries.length === 0) {
+          renderEmptyChart(container, emptyMessage);
+          return;
+        }
+
+        const maxCount = Math.max(...entries.map((entry) => entry.count));
+        container.innerHTML = `
+          <div class="hbar-list">
+            ${entries
+              .map((entry) => {
+                const width = Math.max(8, Math.round((entry.count / maxCount) * 100));
+                return `
+                  <article class="hbar-item" aria-label="${escapeHtml(entry.label)}: ${entry.count}">
+                    <div class="hbar-header">
+                      <strong>${escapeHtml(entry.label)}</strong>
+                      <span>${numberFormatter.format(entry.count)} ${pluralize(entry.count, "episode")}</span>
+                    </div>
+                    <div class="hbar-track">
+                      <div class="hbar-fill" style="width: ${width}%"></div>
+                    </div>
+                  </article>
+                `;
+              })
+              .join("")}
+          </div>
+        `;
+      }
+
+      function renderSeriesChart(rows) {
+        const counts = rows.reduce((accumulator, row) => {
+          accumulator[row.seriesType] = (accumulator[row.seriesType] || 0) + 1;
+          return accumulator;
+        }, {});
+
+        const entries = Object.entries(counts)
+          .map(([label, count]) => ({ label, count }))
+          .sort((left, right) => right.count - left.count);
+
+        renderHorizontalChart(dom.seriesChart, entries, "No series data available for this slice.");
+      }
+
+      function renderDurationChart(rows) {
+        const orderedBuckets = ["<1h", "1-2h", "2-3h", "3h+"];
+        const counts = rows.reduce((accumulator, row) => {
+          accumulator[row.durationBucket] = (accumulator[row.durationBucket] || 0) + 1;
+          return accumulator;
+        }, {});
+
+        const entries = orderedBuckets
+          .map((label) => ({ label, count: counts[label] || 0 }))
+          .filter((entry) => entry.count > 0);
+
+        renderHorizontalChart(dom.durationChart, entries, "No duration data available for this slice.");
+      }
+
+      function updateActiveChips() {
+        const chips = [];
+
+        if (state.filters.search) {
+          chips.push(`Search: ${state.filters.search}`);
+        }
+        if (state.filters.yearFrom !== "all") {
+          chips.push(`From: ${state.filters.yearFrom}`);
+        }
+        if (state.filters.yearTo !== "all") {
+          chips.push(`To: ${state.filters.yearTo}`);
+        }
+        if (state.filters.seriesType !== "all") {
+          chips.push(`Series: ${state.filters.seriesType}`);
+        }
+        if (state.filters.explicit !== "all") {
+          chips.push(state.filters.explicit === "explicit" ? "Explicit only" : "Clean only");
+        }
+        if (state.filters.durationBucket !== "all") {
+          chips.push(`Duration: ${state.filters.durationBucket}`);
+        }
+
+        dom.activeChips.innerHTML = chips.length
+          ? chips.map((chip) => `<span class="chip">${escapeHtml(chip)}</span>`).join("")
+          : `<span class="chip">No active filters</span>`;
+      }
+
+      function renderTable(rows) {
+        const sortedRows = sortRows(rows);
+        const { pageRows, totalPages, startIndex } = getPaginatedRows(sortedRows);
+
+        dom.pageCopy.textContent = `Page ${state.pagination.page} of ${totalPages}`;
+        dom.prevPage.disabled = state.pagination.page === 1;
+        dom.nextPage.disabled = state.pagination.page === totalPages;
+        renderPagination(totalPages);
+
+        if (rows.length === 0) {
+          dom.tableBody.innerHTML = `
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">No episodes match the current filters.</div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        dom.tableBody.innerHTML = pageRows
+          .map((row, rowIndex) => `
+            <tr data-row-id="${row.id}">
+              <td>
+                <img class="table-cover" src="${sanitizeUrl(row.imageUrl, { allowBlank: true })}" alt="" loading="lazy" />
+              </td>
+              <td>
+                <button class="title-button" data-select-id="${escapeHtml(row.id)}" type="button" aria-label="${escapeHtml(row.name)}">
+                  <span>
+                    ${escapeHtml(row.name)}
+                    <small>#${numberFormatter.format(startIndex + rowIndex + 1)} in current view</small>
+                  </span>
+                </button>
+              </td>
+              <td>${escapeHtml(row.guestName)}</td>
+              <td>${formatDate(row.releaseDate)}</td>
+              <td>${escapeHtml(row.durationDisplay)}</td>
+              <td>${escapeHtml(row.seriesType)}</td>
+              <td>${
+                sanitizeUrl(row.spotifyUrl)
+                  ? `<a class="table-link" href="${sanitizeUrl(row.spotifyUrl)}" target="_blank" rel="noreferrer">Open</a>`
+                  : `<span class="chip">No link</span>`
+              }</td>
+            </tr>
+          `)
+          .join("");
+
+        document.querySelectorAll("[data-select-id]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.selectedId = button.dataset.selectId;
+            renderDetail();
+          });
+        });
+      }
+
+      function renderDetail() {
+        if (!state.selectedId) {
+          dom.detailContent.className = "detail-empty";
+          dom.detailContent.textContent = "Select an episode to view artwork, metadata, and the full description.";
+          return;
+        }
+
+        const row = state.rows.find((candidate) => candidate.id === state.selectedId);
+        if (!row) {
+          dom.detailContent.className = "detail-empty";
+          dom.detailContent.textContent = "The selected episode is no longer visible.";
+          return;
+        }
+
+        dom.detailContent.className = "";
+        const spotifyUrl = sanitizeUrl(row.spotifyUrl);
+        dom.detailContent.innerHTML = `
+          <img class="detail-cover" src="${sanitizeUrl(row.imageUrl, { allowBlank: true })}" alt="" loading="lazy" />
+          <div>
+            <h3 id="episode-detail-title" style="margin: 0; font-family: var(--font-display); font-size: 2rem; line-height: 1.05;">${escapeHtml(row.name)}</h3>
+            <p class="chart-copy" style="margin-top: 10px;">${escapeHtml(row.guestName)}</p>
+          </div>
+          <div class="detail-meta">
+            <article><span>Release date</span><strong>${formatDate(row.releaseDate)}</strong></article>
+            <article><span>Duration</span><strong>${escapeHtml(row.durationDisplay)}</strong></article>
+            <article><span>Series</span><strong>${escapeHtml(row.seriesType)}</strong></article>
+            <article><span>Explicit</span><strong>${row.explicit ? "Yes" : "No"}</strong></article>
+          </div>
+          ${
+            spotifyUrl
+              ? `<a class="button" href="${spotifyUrl}" target="_blank" rel="noreferrer" style="width: fit-content; display: inline-flex; align-items: center; text-decoration: none;">Open on Spotify</a>`
+              : `<span class="chip" style="width: fit-content;">No Spotify link available</span>`
+          }
+          <div class="detail-description">${escapeHtml(row.description || "No description available.")}</div>
+        `;
+      }
+
+      function updateResultsSummary(filteredRows) {
+        const totalRows = state.rows.length;
+        if (totalRows === 0) {
+          dom.resultsSummary.textContent = "Upload a CSV to populate the dashboard.";
+          return;
+        }
+
+        const start = filteredRows.length === 0 ? 0 : (state.pagination.page - 1) * state.pagination.pageSize + 1;
+        const end = Math.min(filteredRows.length, state.pagination.page * state.pagination.pageSize);
+
+        dom.resultsSummary.textContent = `Showing ${numberFormatter.format(start)}-${numberFormatter.format(end)} of ${numberFormatter.format(filteredRows.length)} filtered ${pluralize(filteredRows.length, "episode")} from ${numberFormatter.format(totalRows)} loaded rows.`;
+      }
+
+      // Rendering stays centralized so every control change recomputes the same pipeline:
+      // filter -> sort -> paginate -> render cards/charts/table/detail.
+      function renderDashboard() {
+        const filteredRows = getFilteredRows();
+        updateStats(filteredRows);
+        updateResultsSummary(filteredRows);
+        updateActiveChips();
+        renderYearChart(filteredRows);
+        renderSeriesChart(filteredRows);
+        renderDurationChart(filteredRows);
+        renderTable(filteredRows);
+
+        const selectedRowStillVisible = filteredRows.some((row) => row.id === state.selectedId);
+        if (!selectedRowStillVisible) {
+          state.selectedId = filteredRows[0]?.id || null;
+        }
+        renderDetail();
+      }
+
+      function resetFilters() {
+        state.filters = {
+          search: "",
+          yearFrom: "all",
+          yearTo: "all",
+          seriesType: "all",
+          explicit: "all",
+          durationBucket: "all",
+        };
+        state.sort = {
+          key: "releaseDate",
+          direction: "desc",
+        };
+        state.pagination = {
+          page: 1,
+          pageSize: DEFAULT_PAGE_SIZE,
+        };
+
+        dom.searchInput.value = "";
+        dom.yearFrom.value = "all";
+        dom.yearTo.value = "all";
+        dom.seriesFilter.value = "all";
+        dom.explicitFilter.value = "all";
+        dom.durationFilter.value = "all";
+        dom.pageSize.value = String(DEFAULT_PAGE_SIZE);
+
+        updateSortButtons();
+      }
+
+      function updateSortButtons() {
+        dom.sortButtons.forEach((button) => {
+          const isActive = button.dataset.sortKey === state.sort.key;
+          const directionSuffix = isActive ? ` (${state.sort.direction})` : "";
+          button.dataset.active = String(isActive);
+          button.textContent = `${button.dataset.sortLabel}${directionSuffix}`;
+        });
+      }
+
+      async function loadCsvFile(file) {
+        clearError();
+
+        if (!file) {
+          return;
+        }
+
+        try {
+          const csvText = await file.text();
+          const rows = toObjects(parseCsv(csvText));
+          state.rows = rows;
+          state.filename = file.name;
+          populateFilterOptions(rows);
+          resetFilters();
+          state.selectedId = rows[0]?.id || null;
+          dom.dashboard.classList.add("is-visible");
+
+          const releaseDates = rows.map((row) => row.releaseDate).filter(Boolean).sort();
+
+          showDatasetMeta(
+            `Loaded ${file.name} · ${numberFormatter.format(rows.length)} ${pluralize(rows.length, "episode")} · ${formatDate(releaseDates[0])} to ${formatDate(releaseDates[releaseDates.length - 1])}`
+          );
+
+          log("info", "Dataset loaded", { filename: file.name, rows: rows.length });
+          renderDashboard();
+        } catch (error) {
+          log("error", "Failed to load CSV", error);
+          state.rows = [];
+          state.selectedId = null;
+          dom.dashboard.classList.remove("is-visible");
+          resetDatasetMeta();
+          showError(error instanceof Error ? error.message : "An unexpected error occurred while reading the CSV.");
+        }
+      }
+
+      function handleFilterChange() {
+        if (state.rows.length === 0) {
+          return;
+        }
+
+        if (state.filters.yearFrom !== "all" && state.filters.yearTo !== "all" && state.filters.yearFrom > state.filters.yearTo) {
+          state.filters.yearTo = state.filters.yearFrom;
+          dom.yearTo.value = state.filters.yearFrom;
+        }
+
+        state.pagination.page = 1;
+        renderDashboard();
+      }
+
+      function wireEvents() {
+        dom.triggerUpload.addEventListener("click", () => {
+          dom.fileInput.click();
+        });
+
+        dom.fileInput.addEventListener("change", (event) => {
+          const [file] = event.target.files;
+          loadCsvFile(file);
+        });
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dom.dropZone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dom.dropZone.classList.add("is-dragging");
+          });
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          dom.dropZone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dom.dropZone.classList.remove("is-dragging");
+          });
+        });
+
+        dom.dropZone.addEventListener("drop", (event) => {
+          const [file] = event.dataTransfer.files;
+          if (file) {
+            loadCsvFile(file);
+          }
+        });
+
+        dom.resetDashboard.addEventListener("click", () => {
+          if (state.rows.length === 0) {
+            clearError();
+            return;
+          }
+          resetFilters();
+          renderDashboard();
+        });
+
+        dom.searchInput.addEventListener("input", (event) => {
+          state.filters.search = event.target.value;
+          handleFilterChange();
+        });
+
+        dom.yearFrom.addEventListener("change", (event) => {
+          state.filters.yearFrom = event.target.value;
+          handleFilterChange();
+        });
+
+        dom.yearTo.addEventListener("change", (event) => {
+          state.filters.yearTo = event.target.value;
+          handleFilterChange();
+        });
+
+        dom.seriesFilter.addEventListener("change", (event) => {
+          state.filters.seriesType = event.target.value;
+          handleFilterChange();
+        });
+
+        dom.explicitFilter.addEventListener("change", (event) => {
+          state.filters.explicit = event.target.value;
+          handleFilterChange();
+        });
+
+        dom.durationFilter.addEventListener("change", (event) => {
+          state.filters.durationBucket = event.target.value;
+          handleFilterChange();
+        });
+
+        dom.pageSize.addEventListener("change", (event) => {
+          const nextPageSize = Number.parseInt(event.target.value, 10);
+          if (!PAGE_SIZE_OPTIONS.includes(nextPageSize)) {
+            return;
+          }
+
+          state.pagination.pageSize = nextPageSize;
+          state.pagination.page = 1;
+          renderDashboard();
+        });
+
+        dom.prevPage.addEventListener("click", () => {
+          if (state.pagination.page > 1) {
+            state.pagination.page -= 1;
+            renderDashboard();
+          }
+        });
+
+        dom.nextPage.addEventListener("click", () => {
+          const totalPages = Math.max(1, Math.ceil(getFilteredRows().length / state.pagination.pageSize));
+          if (state.pagination.page < totalPages) {
+            state.pagination.page += 1;
+            renderDashboard();
+          }
+        });
+
+        dom.pageNumbers.addEventListener("click", (event) => {
+          const pageButton = event.target.closest("[data-page]");
+          if (!pageButton) {
+            return;
+          }
+
+          const nextPage = Number.parseInt(pageButton.dataset.page, 10);
+          if (Number.isNaN(nextPage) || nextPage === state.pagination.page) {
+            return;
+          }
+
+          state.pagination.page = nextPage;
+          renderDashboard();
+        });
+
+        dom.sortButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const nextKey = button.dataset.sortKey;
+            if (state.sort.key === nextKey) {
+              state.sort.direction = state.sort.direction === "asc" ? "desc" : "asc";
+            } else {
+              state.sort.key = nextKey;
+              state.sort.direction = nextKey === "releaseDate" || nextKey === "durationMs" ? "desc" : "asc";
+            }
+            state.pagination.page = 1;
+            updateSortButtons();
+            renderDashboard();
+          });
+        });
+      }
+
+      populatePageSizeOptions();
+      updateSortButtons();
+      wireEvents();
+      log("info", "Dashboard initialized");
+    </script>
+  </body>
+</html>
