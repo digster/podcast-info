@@ -27,3 +27,7 @@ Fetch all episodes of "Theories of Everything with Curt Jaimungal" from Spotify 
 ## 2026-03-10: Implement fetch-podcast CLI Utility
 
 Implement a Python CLI utility (`uv run fetch-podcast "Podcast Name"`) that automates the entire podcast data fetch pipeline into a single command. Uses Click, subprocess wrapper for spotify-client, env remapping, and CSV writer with show_name backfill. Includes full test suite.
+
+## 2026-03-10: Add fetch-podcast Skill File
+
+Create a Claude Code skill file at `.claude/skills/fetch-podcast/skill.md` so users can invoke `/fetch-podcast "Podcast Name"` and have Claude handle the entire workflow automatically — prerequisite validation, duplicate detection, CLI execution with proper flags, output verification, and next-step suggestions.
