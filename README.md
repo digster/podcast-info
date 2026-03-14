@@ -16,7 +16,7 @@ UV_CACHE_DIR=/tmp/uv-cache uv run fetch-podcast "Theories of Everything with Cur
 | --- | --- | --- |
 | `SEARCH_TERM` (positional) | — | Podcast name to search |
 | `--spotify-client-path` / `-s` | `../../tools/spotify-client` | Path to spotify-client project |
-| `--output` / `-o` | `<slugified_name>_episodes.csv` | Output CSV path |
+| `--output` / `-o` | `<show_id>_episodes.csv` | Output CSV path |
 | `--auto-select` | `False` | Auto-pick first search result |
 | `--yes` / `-y` | `False` | Skip confirmation prompt |
 | `--limit` / `-l` | `5000` | Max episodes to fetch |

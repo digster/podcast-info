@@ -1,7 +1,6 @@
 """Click entry point — orchestrates the full fetch-podcast pipeline."""
 
 import logging
-import re
 import sys
 from pathlib import Path
 
@@ -12,11 +11,6 @@ from fetch_podcast.env import build_subprocess_env
 from fetch_podcast.spotify import SpotifyCliError, fetch_episodes, search_shows
 
 logger = logging.getLogger("fetch_podcast")
-
-
-def _slugify(name: str) -> str:
-    """Convert a show name to a filesystem-safe slug for the default output filename."""
-    return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
 
 
 def _configure_logging(verbose: bool) -> None:
@@ -40,7 +34,7 @@ def _configure_logging(verbose: bool) -> None:
     "--output", "-o",
     type=click.Path(dir_okay=False),
     default=None,
-    help="Output CSV path. Defaults to <slugified_show_name>_episodes.csv.",
+    help="Output CSV path. Defaults to <show_id>_episodes.csv.",
 )
 @click.option(
     "--auto-select",
@@ -180,7 +174,7 @@ def cli(
     if output:
         output_path = Path(output)
     else:
-        output_path = Path(f"{_slugify(show_name)}_episodes.csv")
+        output_path = Path(f"{show_id}_episodes.csv")
 
     row_count = write_episodes_csv(episodes, output_path, show_name=show_name)
 

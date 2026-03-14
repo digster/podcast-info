@@ -6,23 +6,7 @@ from unittest.mock import patch
 
 from click.testing import CliRunner
 
-from fetch_podcast.cli import _slugify, cli
-
-
-class TestSlugify:
-    def test_basic_name(self):
-        assert _slugify("Huberman Lab") == "huberman_lab"
-
-    def test_special_characters(self):
-        assert _slugify("Theories of Everything with Curt Jaimungal") == (
-            "theories_of_everything_with_curt_jaimungal"
-        )
-
-    def test_strips_leading_trailing(self):
-        assert _slugify("--Hello World--") == "hello_world"
-
-    def test_consecutive_specials(self):
-        assert _slugify("A & B: The Podcast!") == "a_b_the_podcast"
+from fetch_podcast.cli import cli
 
 
 class TestCli:
@@ -138,7 +122,7 @@ class TestCli:
         assert "No shows found" in result.output
 
     def test_default_output_filename(self, tmp_path):
-        """Without -o, the output file is based on the slugified show name."""
+        """Without -o, the output file is named using the Spotify show ID."""
         sc_path = tmp_path / "spotify-client"
         sc_path.mkdir()
         (sc_path / "pyproject.toml").write_text("[project]\nname = 'fake'\n")
@@ -159,7 +143,7 @@ class TestCli:
                 ])
 
                 assert result.exit_code == 0
-                assert Path("test_podcast_episodes.csv").exists()
+                assert Path("show1_episodes.csv").exists()
 
     def test_partial_fetch_exit_code_2(self, tmp_path):
         """Exit code 2 when fetched count doesn't match total_episodes."""

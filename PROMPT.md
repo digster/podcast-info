@@ -31,3 +31,7 @@ Implement a Python CLI utility (`uv run fetch-podcast "Podcast Name"`) that auto
 ## 2026-03-10: Add fetch-podcast Skill File
 
 Create a Claude Code skill file at `.claude/skills/fetch-podcast/skill.md` so users can invoke `/fetch-podcast "Podcast Name"` and have Claude handle the entire workflow automatically — prerequisite validation, duplicate detection, CLI execution with proper flags, output verification, and next-step suggestions.
+
+## 2026-03-13: Use Show ID in Default CSV Filename
+
+Change the default CSV output filename from `{slugified_show_name}_episodes.csv` to `{show_id}_episodes.csv` for uniqueness and stability. Remove the `_slugify` helper and its tests.
